@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    const form = document.getElementById('login');
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
+
     const about = document.getElementById('about');
     const login = document.getElementById('login');
     const tutorial = document.getElementById('tutorial');
@@ -15,5 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     home.addEventListener('click', (event) => {
         window.location.href = '/home'
+    });
+
+    form.addEventListener('submit', (event) => {
+
+        window.location.href = '/profile'
     });
 });
