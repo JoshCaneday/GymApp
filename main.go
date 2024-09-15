@@ -16,11 +16,19 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "templates/tutorial.html")
+	renderTemplate(w, "templates/home.html")
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "templates/about.html")
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "templates/login.html")
+}
+
+func tutorialHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "templates/tutorial.html")
 }
 
 func main() {
@@ -31,6 +39,8 @@ func main() {
 	// Route Handlers
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/about", aboutHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/tutorial", tutorialHandler)
 
 	// Start the server
 	fmt.Println("Server started at http://localhost:8080")

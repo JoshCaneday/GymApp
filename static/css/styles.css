@@ -59,7 +59,13 @@ header{
 }
 
 .home-box button:hover, .about-box button:hover, .login-box button:hover, .tutorial-box button:hover{
-    background-color: rgba(0, 0, 0, 0.2); /* Slightly darken on hover */
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.home-box button:disabled, .about-box button:disabled, .login-box button:disabled, .tutorial-box button:disabled{
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .page-box {
@@ -120,6 +126,21 @@ header{
     color: white;
 }
 
-.tutorial-content {
-    color: aqua;
+.tutorial-content, .about-content, .login-content {
+    margin-top: 8vh;
+    color: black;
+}
+
+.login-help {
+    margin-top: 20vh;
+    text-align: center;
+}
+
+.login-form {
+    margin-top: 10vh;
+    text-align: center;
+}
+
+#login label {
+    padding-left: 5vw;
 }
