@@ -119,3 +119,7 @@ header{
     z-index: 2;
     color: white;
 }
+
+.tutorial-content {
+    color: aqua;
+}
