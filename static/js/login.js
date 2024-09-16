@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const form = document.getElementById('login');
-    const username = localStorage.getItem('username');
-    const password = localStorage.getItem('password');
+    const form = document.getElementById('login-button');
 
     const about = document.getElementById('about');
     const login = document.getElementById('login');
@@ -23,7 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     form.addEventListener('submit', (event) => {
-
-        window.location.href = '/profile'
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        console.log('Username:', username, 'Password:', password);
+        const dataToSend = { key: String(username) };
+        fetch('http://localhost:8080/api/getInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSend),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message != "No Data"){
+                window.location.href = '/profile'
+            }
+            else{
+                document.getElementById('login-fail').textContent = data.message;
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
 });

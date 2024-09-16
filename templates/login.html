@@ -30,15 +30,15 @@
             </nav>
         </header>
         <div class="login-content">
-            <div class="login-help">
+            <div class="login-help" id="login-fail">
                 <h1>Log In Here</h1>
             </div>
             <div class="login-form">
-                <form id="login">
+                <form id="login-button">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username">
+                    <input type="text" id="username" name="username" required>
                     <label for="password">Password:</label>
-                    <input type="text" id="password" name="password">
+                    <input type="password" id="password" name="password" required>
                     <button type="submit">Log In</button>
                 </form>
             </div>
