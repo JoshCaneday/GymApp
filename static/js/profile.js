@@ -1,32 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
+    /* If user somehow gets to this page without logging in, redirect to login page */
+    if (localStorage.getItem('profile_id') === null) {
+        window.location.href = '/login';
+    }
     const about = document.getElementById('about');
-    const login = document.getElementById('login');
+    const logout = document.getElementById('logout');
     const tutorial = document.getElementById('tutorial');
     const home = document.getElementById('home');
 
     const content = document.getElementById('profile-id');
-    if (localStorage.getItem('profile_id') !== null) {
-        content.textContent = localStorage.getItem('profile_id');
-        /* Do any other profile stuff here */
 
-        
+    content.textContent = "User ID: " + localStorage.getItem('profile_id');
+    /* Do any other profile stuff here */
 
-        /* This removal of the item must come last */
-        localStorage.removeItem('profile_id');
-    }
-    else{
-        content.textContent = "No Profile ID";
-    }
     about.addEventListener('click', (event) => {
-        window.location.href = '/about'
+        window.location.href = '/about';
     });
-    login.addEventListener('click', (event) => {
-        window.location.href = '/login'
+    /* Slight difference for the login button here in that it is a logout button because user has logged in already */
+    logout.addEventListener('click', (event) => {
+        localStorage.removeItem('profile_id');
+        window.location.href = '/login';
     });
     tutorial.addEventListener('click', (event) => {
-        window.location.href = '/tutorial'
+        window.location.href = '/tutorial';
     });
     home.addEventListener('click', (event) => {
-        window.location.href = '/home'
+        window.location.href = '/home';
     });
 });

@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    /* If user somehow gets to login page when already logged in, redirect to profile page */
+    if (localStorage.getItem('profile_id') !== null) {
+        window.location.href = '/profile';
+    }
 
     const form = document.getElementById('login-button');
 
@@ -8,16 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const home = document.getElementById('home');
     login.disabled = true;
     about.addEventListener('click', (event) => {
-        window.location.href = '/about'
+        window.location.href = '/about';
     });
     login.addEventListener('click', (event) => {
-        window.location.href = '/login'
+        window.location.href = '/login';
     });
     tutorial.addEventListener('click', (event) => {
-        window.location.href = '/tutorial'
+        window.location.href = '/tutorial';
     });
     home.addEventListener('click', (event) => {
-        window.location.href = '/home'
+        window.location.href = '/home';
     });
 
     form.addEventListener('submit', (event) => {

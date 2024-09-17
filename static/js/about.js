@@ -5,15 +5,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const home = document.getElementById('home');
     about.disabled = true;
     about.addEventListener('click', (event) => {
-        window.location.href = '/about'
+        window.location.href = '/about';
     });
-    login.addEventListener('click', (event) => {
-        window.location.href = '/login'
-    });
+    if (localStorage.getItem('profile_id') !== null) {
+        login.textContent = 'PROFILE';
+        login.addEventListener('click', (event) => {
+            window.location.href = '/profile';
+        });
+    } else {
+        login.addEventListener('click', (event) => {
+            window.location.href = '/login';
+        });
+    }
     tutorial.addEventListener('click', (event) => {
-        window.location.href = '/tutorial'
+        window.location.href = '/tutorial';
     });
     home.addEventListener('click', (event) => {
-        window.location.href = '/home'
+        window.location.href = '/home';
     });
 });
