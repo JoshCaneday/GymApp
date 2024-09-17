@@ -22,7 +22,8 @@ const (
 var db *sql.DB
 
 type RequestData struct {
-	Key string `json:"key"`
+	Username string `json:"user_name"`
+	Password string `json:"pass_word"`
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string) {
@@ -67,7 +68,7 @@ func getInfoHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	rows, err := db.Query("SELECT username FROM profile WHERE USERNAME = $1;", data.Key)
+	rows, err := db.Query("SELECT profile_id FROM profile WHERE username = $1 AND password = $2;", data.Username, data.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -84,7 +85,6 @@ func getInfoHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		info = "No Data"
 	}
-	fmt.Println(info)
 	response := map[string]string{"info": info}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)

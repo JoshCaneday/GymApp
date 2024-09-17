@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         console.log('Username:', username, 'Password:', password);
-        const dataToSend = { key: String(username) };
+        /* Make hash function to call and secure the password */
+        const dataToSend = { user_name: String(username), pass_word: String(password) };
         fetch('http://localhost:8080/api/getInfo', {
             method: 'POST',
             headers: {
@@ -35,11 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.message != "No Data"){
-                window.location.href = '/profile'
+            if (data.info !== "No Data"){
+                localStorage.setItem('profile_id', data.info)
+                window.location.href = '/profile';
             }
             else{
-                document.getElementById('login-fail').textContent = data.message;
+                document.getElementById('login-fail').textContent = "Incorrect Username or Password";
+                document.getElementById('login-fail').style.color = 'red';
             }
         })
         .catch(error => console.error('Error:', error));

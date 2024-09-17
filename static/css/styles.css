@@ -120,13 +120,14 @@ header{
 .picture-text {
     font-size: 100px;
     position: absolute;
-    top: 22%;
-    left: 22%;
+    top: 25%;
+    left: 32%;
     z-index: 2;
     color: white;
+    text-shadow: 0 0 3px black, 0 0 5px black;
 }
 
-.tutorial-content, .about-content, .login-content {
+.tutorial-content, .about-content, .login-content, .profile-content{
     margin-top: 8vh;
     color: black;
 }
