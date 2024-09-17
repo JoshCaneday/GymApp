@@ -129,7 +129,6 @@ header{
 
 .tutorial-content, .about-content, .login-content, .profile-content{
     margin-top: 8vh;
-    color: black;
 }
 
 .login-help {
@@ -144,4 +143,43 @@ header{
 
 #login label {
     padding-left: 5vw;
+}
+
+.profile-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.profile-side-bar {
+    flex: 1;
+    margin-left: 8vw;
+    margin-top: 10vh;
+    color: black;
+}
+
+.profile-first-name-block, .profile-last-name-block, .profile-id-box-block, .days-since-excercise-block {
+    font-size: 15px;
+}
+
+.statistics-box {
+    flex: 2;
+    margin-top: 10vh;
+    margin-right: 8vw;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    background-color: white;
+    border: 2px solid #333;
+    border-radius: 10px;
+}
+
+.grid-item {
+    background-color: #cceeff;
+    border: 1px solid #333;
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 2px;
 }
