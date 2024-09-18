@@ -109,8 +109,8 @@ func main() {
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/tutorial", tutorialHandler)
 	http.HandleFunc("/profile", profileHandler)
-	http.HandleFunc("/exercise_log", profileHandler)
-	http.HandleFunc("/measurement_log", profileHandler)
+	http.HandleFunc("/exercise_log", exerciseLogHandler)
+	http.HandleFunc("/measurement_log", measurementLogHandler)
 	http.HandleFunc("/api/getInfo", getInfoHandler)
 
 	// Make sure PostgreSQL connection is working

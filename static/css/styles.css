@@ -127,7 +127,7 @@ header{
     text-shadow: 0 0 3px black, 0 0 5px black;
 }
 
-.tutorial-content, .about-content, .login-content, .profile-content{
+.tutorial-content, .about-content, .login-content, .profile-content, .exercise-content, .measurement-content{
     margin-top: 8vh;
 }
 
@@ -181,7 +181,7 @@ header{
     object-fit: cover;
 }
 
-.profile-first-name-block, .profile-last-name-block, .profile-id-block, .days-since-excercise-block, .friends-button {
+.profile-first-name-block, .profile-last-name-block, .profile-id-block, .friends-button {
     border: 1px solid black;
     margin-right: 1vw;
     font-size: 15px;
@@ -259,4 +259,39 @@ header{
 
 #log-measurement:hover {
     background-color: #240343;
+}
+
+.exercise-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5vw;
+}
+
+.exercise-side-bar {
+    flex: 0.8;
+    margin-left: 8vw;
+    margin-top: 10vh;
+    border: 5px solid black;
+    padding-left: 1vw;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+.exercise-stat {
+    border: 1px solid black;
+    margin-right: 1vw;
+    font-size: 15px;
+    padding-left: 1vw;
+}
+
+.main-exercise-content {
+    margin-top: 10vh;
+    margin-right: 8vw;
+    flex: 2;
+}
+
+.new-exercise-log {
+    margin-top: 5vh;
+    background-color: white;
 }
