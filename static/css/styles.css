@@ -149,23 +149,31 @@ header{
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 5vw;
 }
 
 .profile-side-bar {
     flex: 1;
     margin-left: 8vw;
     margin-top: 10vh;
-    color: black;
+    border: 1px solid black;
+    padding-left: 1vw;
+    padding-top: 1vh;
 }
 
-.profile-first-name-block, .profile-last-name-block, .profile-id-box-block, .days-since-excercise-block {
+.profile-picture, .profile-first-name-block, .profile-last-name-block, .profile-id-block, .days-since-excercise-block, .friends-button {
+    border: 1px solid #333;
+    margin-right: 5vw;
     font-size: 15px;
 }
 
-.statistics-box {
-    flex: 2;
+.main-profile-content {
     margin-top: 10vh;
     margin-right: 8vw;
+    flex: 2;
+}
+
+.statistics-box {
     padding: 10px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -176,6 +184,32 @@ header{
 }
 
 .grid-item {
+    background-color: #cceeff;
+    border: 1px solid #333;
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 2px;
+}
+
+.log-button-boxes {
+    margin-top: 5vh;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1vw;
+    background-color: white;
+}
+
+.exercise-log-box {
+    background-color: #cceeff;
+    border: 1px solid #333;
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 2px;
+}
+
+.measurement-log-box {
     background-color: #cceeff;
     border: 1px solid #333;
     padding: 20px;
