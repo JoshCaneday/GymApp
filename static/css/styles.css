@@ -293,5 +293,41 @@ header{
 
 .new-exercise-log {
     margin-top: 5vh;
-    background-color: white;
+    height: 10vh;
+    border: 2px solid black;
+    border-radius: 7px;
+}
+
+#make-exercise-log {
+    width: 100%;
+    height: 100%;
+    background-color: #680c0c;
+    border: black;
+    cursor: pointer;
+    color: white;
+}
+
+#make-exercise-log:hover {
+    background-color: #310000;
+}
+
+.exercise-history {
+    margin-top: 5vh;
+    height: 5vh;
+}
+
+.past-exercise {
+    margin-bottom: 1vh;
+    width: 100%;
+    height: 100%;
+    background-color: #680c0c;
+    border: black;
+    cursor: pointer;
+    color: white;
+    border: 2px solid black;
+    border-radius: 7px;
+}
+
+.past-exercise:hover {
+    background-color: #310000;
 }
