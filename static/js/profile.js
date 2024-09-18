@@ -7,12 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const logout = document.getElementById('logout');
     const tutorial = document.getElementById('tutorial');
     const home = document.getElementById('home');
+    const exercise_log = document.getElementById('log-exercise');
+    const measurement_log = document.getElementById('log-measurement');
 
     const content = document.getElementById('profile-id');
-
     content.textContent = "User ID: " + localStorage.getItem('profile_id');
     /* Do any other profile stuff here */
 
+    exercise_log.addEventListener('click', (event) => {
+        window.location.href = '/exercise_log';
+    })
+    measurement_log.addEventListener('click', (event) => {
+        window.location.href = '/measurement_log';
+    })
     about.addEventListener('click', (event) => {
         window.location.href = '/about';
     });

@@ -55,6 +55,14 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "templates/profile.html")
 }
 
+func exerciseLogHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "templates/exercise_log.html")
+}
+
+func measurementLogHandler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "templates/measurement_log.html")
+}
+
 func getInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -101,6 +109,8 @@ func main() {
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/tutorial", tutorialHandler)
 	http.HandleFunc("/profile", profileHandler)
+	http.HandleFunc("/exercise_log", profileHandler)
+	http.HandleFunc("/measurement_log", profileHandler)
 	http.HandleFunc("/api/getInfo", getInfoHandler)
 
 	// Make sure PostgreSQL connection is working
