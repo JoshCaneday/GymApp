@@ -77,7 +77,7 @@ header{
     border: 2px solid #000000;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: auto;
+    width: 15vw;
 }
 
 .page-box h1 {
@@ -313,21 +313,108 @@ header{
 
 .exercise-history {
     margin-top: 5vh;
-    height: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+}
+
+.exercise-history table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 10px;
 }
 
 .past-exercise {
-    margin-bottom: 1vh;
     width: 100%;
-    height: 100%;
+    padding: 2vh 0;
     background-color: #680c0c;
-    border: black;
-    cursor: pointer;
-    color: white;
     border: 2px solid black;
     border-radius: 7px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .past-exercise:hover {
     background-color: #310000;
+}
+
+.measurement-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5vw;
+}
+
+.measurement-side-bar {
+    flex: 0.8;
+    margin-left: 8vw;
+    margin-top: 10vh;
+    border: 5px solid black;
+    padding-left: 1vw;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+.measurement-stat {
+    border: 1px solid black;
+    margin-right: 1vw;
+    font-size: 15px;
+    padding-left: 1vw;
+}
+
+.main-measurement-content {
+    margin-top: 10vh;
+    margin-right: 8vw;
+    flex: 2;
+}
+
+.new-measurement-log {
+    margin-top: 5vh;
+    height: 10vh;
+    border: 2px solid black;
+    border-radius: 7px;
+}
+
+#make-measurement-log {
+    width: 100%;
+    height: 100%;
+    background-color: #400f6e;
+    border: black;
+    cursor: pointer;
+    color: white;
+}
+
+#make-measurement-log:hover {
+    background-color: #240343;
+}
+
+.measurement-history {
+    margin-top: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+}
+
+.measurement-history table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 10px;
+}
+
+.past-measurement {
+    width: 100%;
+    padding: 2vh 0;
+    background-color: #400f6e;
+    border: 2px solid black;
+    border-radius: 7px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.past-measurement:hover {
+    background-color: #240343;
 }

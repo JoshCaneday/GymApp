@@ -3,7 +3,7 @@
     <head>
         <title>MuscleMaster</title>
         <link rel="stylesheet" href="/static/css/styles.css">
-        <script src="/static/js/tutorial.js" defer></script>
+        <script src="/static/js/measurement_log.js" defer></script>
     </head>
     <body>
         <header>
@@ -17,7 +17,7 @@
                             <button id="about">ABOUT</button>
                         </div>
                         <div class="page-box">
-                            <h1>Tutorial</h1>
+                            <h1>Measurement Log</h1>
                         </div>
                         <div class="login-box">
                             <button id="login">LOGIN</button>
@@ -29,8 +29,41 @@
                 </div>
             </nav>
         </header>
-        <div class="tutorial-content">
-            <h1>Here goes content</h1>
+        <div class="measurement-content">
+            <div class="measurement-container">
+                <div class="measurement-side-bar">
+                    <div class="measurement-stat">
+                        <h1>Not Sure Yet:</h1>
+                    </div>
+                    <div class="measurement-stat">
+                        <h1>Not Sure Yet:</h1>
+                    </div>
+                    <div class="measurement-stat">
+                        <h1>Search Measurement:</h1>
+                    </div>
+                </div>
+                <div class="main-measurement-content">
+                    <div class="new-measurement-log">
+                        <button id="make-measurement-log">Create New Log</button>
+                    </div>
+                    <div class="measurement-history">
+                        <table id="table" class="table">
+                            <tr>
+                                <td><button class="past-measurement">Past Log</button></td>
+                            </tr>
+                            <tr>
+                                <td><button class="past-measurement">Past Log</button></td>
+                            </tr>
+                            <tr>
+                                <td><button class="past-measurement">Past Log</button></td>
+                            </tr>
+                            <tr>
+                                <td><button class="past-measurement">Past Log</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
