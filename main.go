@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -22,6 +23,11 @@ const (
 var db *sql.DB
 
 type RequestData struct {
+	Username string `json:"user_name"`
+	Password string `json:"pass_word"`
+}
+
+type RequestNewExercise struct {
 	Username string `json:"user_name"`
 	Password string `json:"pass_word"`
 }
@@ -61,6 +67,49 @@ func exerciseLogHandler(w http.ResponseWriter, r *http.Request) {
 
 func measurementLogHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "templates/measurement_log.html")
+}
+
+func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
+	// Not to be confused with exerciseLogHandler which just switches to the page for all things exercise logs
+	var date = time.Now().Format("2006-01-02")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	var data RequestNewExercise
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rows, err := db.Query("SELECT l.log_id FROM profile p INNER JOIN log l ON p.profile_id = l.profile_id WHERE l.date = $1;", date)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		// add to already made log
+		rows2, err := db.Exec("")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		// make new log and add to it
+		rows2, err := db.Exec("")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	fmt.Print(date)
+	response := map[string]string{"info": date}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+
 }
 
 func getInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +160,7 @@ func main() {
 	http.HandleFunc("/profile", profileHandler)
 	http.HandleFunc("/exercise_log", exerciseLogHandler)
 	http.HandleFunc("/measurement_log", measurementLogHandler)
+	http.HandleFunc("/api/logExercise", logExerciseHandler)
 	http.HandleFunc("/api/getInfo", getInfoHandler)
 
 	// Make sure PostgreSQL connection is working

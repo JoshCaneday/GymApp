@@ -45,6 +45,26 @@
                 <div class="main-exercise-content">
                     <div class="new-exercise-log">
                         <button id="make-exercise-log">Create New Log</button>
+                        <div id="miniModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <h2>Mini Window</h2>
+                                <form id="create-new-exercise-log">
+                                    <label for="exercise">Exercise</label>
+                                    <input type="text" id="exercise" name="exercise">
+                                    <label for="metric">Metric</label>
+                                    <input type="text" id="metric" name="metric">
+                                    <label for="amount">Amount</label>
+                                    <input type="text" id="amount" name="amount">
+                                    <label for="reps">Reps</label>
+                                    <input type="text" id="reps" name="reps">
+                                    <label for="sets">Sets</label>
+                                    <input type="text" id="sets" name="sets">
+                                    <button type="submit">Create</button>
+                                </form>
+                                <p>This is a mini popup window!</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="exercise-history">
                         <table id="table" class="table">
