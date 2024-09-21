@@ -40,7 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     form.addEventListener('submit', (event) => {
-        dataToSend = {}
+        localStorage.setItem('exercise', document.getElementById('exercise').value)
+        dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), exercise: String(document.getElementById('exercise').value), 
+            metric: String(document.getElementById('metric').value), amount: String(document.getElementById('amount').value),
+            reps: String(document.getElementById('reps').value), sets: String(document.getElementById('sets').value)
+        }
         fetch('http://localhost:8080/api/logExercise', {
             method: 'POST',
             headers: {

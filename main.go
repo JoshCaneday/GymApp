@@ -28,8 +28,12 @@ type RequestData struct {
 }
 
 type RequestNewExercise struct {
-	Username string `json:"user_name"`
-	Password string `json:"pass_word"`
+	Profile_ID string `json:"profile_ID"`
+	Exercise   string `json:"exercise"`
+	Metric     string `json:"metric"`
+	Amount     string `json:"amount"`
+	Reps       string `json:"reps"`
+	Sets       string `json:"sets"`
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string) {
@@ -71,7 +75,10 @@ func measurementLogHandler(w http.ResponseWriter, r *http.Request) {
 
 func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 	// Not to be confused with exerciseLogHandler which just switches to the page for all things exercise logs
-	var date = time.Now().Format("2006-01-02")
+	days := map[time.Weekday]string{1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Friday"}
+	currentTime := time.Now()
+	date := currentTime.Format("2006-01-02")
+	day := currentTime.Weekday()
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -92,18 +99,39 @@ func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 
 	if rows.Next() {
 		// add to already made log
-		rows2, err := db.Exec("")
+		var check string
+		rows.Scan(&check)
+		fmt.Println(check)
+		_, err := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", check,
+			data.Exercise, data.Amount, data.Metric, data.Reps, data.Sets)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	} else {
 		// make new log and add to it
-		rows2, err := db.Exec("")
+		_, err := db.Exec("INSERT INTO log(date, day, log_type, profile_id) VALUES ($1, $2, 'exercise', $3);", date, days[day], data.Profile_ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		rows3, err := db.Query("SELECT max(l.log_id) FROM log l WHERE l.profile_id = $1;", data.Profile_ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		var check string
+		rows3.Scan(&check)
+		fmt.Println(check)
+
+		defer rows3.Close()
+		_, err2 := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", check,
+			data.Exercise, data.Amount, data.Metric, data.Reps, data.Sets)
+		if err2 != nil {
+			http.Error(w, err2.Error(), http.StatusInternalServerError)
+			return
+		}
+
 	}
 	fmt.Print(date)
 	response := map[string]string{"info": date}
