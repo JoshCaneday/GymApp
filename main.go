@@ -36,6 +36,10 @@ type RequestNewExercise struct {
 	Sets       string `json:"sets"`
 }
 
+type RequestExerciseLogs struct {
+	Profile_ID string `json:"profile_ID"`
+}
+
 func renderTemplate(w http.ResponseWriter, tmpl string) {
 	t, err := template.ParseFiles(tmpl)
 	if err != nil {
@@ -96,12 +100,10 @@ func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer rows.Close()
-
 	if rows.Next() {
 		// add to already made log
 		var check string
 		rows.Scan(&check)
-		fmt.Println(check)
 		_, err := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", check,
 			data.Exercise, data.Amount, data.Metric, data.Reps, data.Sets)
 		if err != nil {
@@ -109,35 +111,74 @@ func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		// make new log and add to it
-		_, err := db.Exec("INSERT INTO log(date, day, log_type, profile_id) VALUES ($1, $2, 'exercise', $3);", date, days[day], data.Profile_ID)
+		// Create a new log and return its ID immediately
+		var logID int
+		err := db.QueryRow("INSERT INTO log(date, day, log_type, profile_id) VALUES ($1, $2, 'exercise', $3) RETURNING log_id;", date, days[day], data.Profile_ID).Scan(&logID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		rows3, err := db.Query("SELECT max(l.log_id) FROM log l WHERE l.profile_id = $1;", data.Profile_ID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		var check string
-		rows3.Scan(&check)
-		fmt.Println(check)
 
-		defer rows3.Close()
-		_, err2 := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", check,
+		fmt.Println(logID)
+
+		// Insert into exercise_log using the retrieved log_id
+		_, err2 := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", logID,
 			data.Exercise, data.Amount, data.Metric, data.Reps, data.Sets)
 		if err2 != nil {
 			http.Error(w, err2.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		fmt.Println("Here")
 	}
-	fmt.Print(date)
+
 	response := map[string]string{"info": date}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 
+}
+
+func getExerciseLogs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	var data RequestExerciseLogs
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rows, err := db.Query(`
+    SELECT l.date, l.day, e.label, e.weight, e.metric, e.reps, e.sets
+    FROM profile p
+    INNER JOIN log l ON p.profile_id = l.profile_id
+    INNER JOIN exercise_log e ON e.log_id = l.log_id
+    WHERE p.profile_id = $1
+	ORDER BY e.exercise_id DESC
+	LIMIT 10;
+	`, data.Profile_ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var info [][]string
+	for rows.Next() {
+		var date, day, label, metric, weight, reps, sets string
+
+		// Scan the row's columns into variables
+		err := rows.Scan(&date, &day, &label, &weight, &metric, &reps, &sets)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		info = append(info, []string{date, day, label, weight, metric, reps, sets})
+	}
+	response := map[string][][]string{"info": info}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func getInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -189,6 +230,7 @@ func main() {
 	http.HandleFunc("/exercise_log", exerciseLogHandler)
 	http.HandleFunc("/measurement_log", measurementLogHandler)
 	http.HandleFunc("/api/logExercise", logExerciseHandler)
+	http.HandleFunc("/api/getExerciseLogs", getExerciseLogs)
 	http.HandleFunc("/api/getInfo", getInfoHandler)
 
 	// Make sure PostgreSQL connection is working
