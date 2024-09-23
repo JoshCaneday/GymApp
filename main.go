@@ -79,7 +79,7 @@ func measurementLogHandler(w http.ResponseWriter, r *http.Request) {
 
 func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 	// Not to be confused with exerciseLogHandler which just switches to the page for all things exercise logs
-	days := map[time.Weekday]string{1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Friday"}
+	days := map[time.Weekday]string{1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 0: "Sunday"}
 	currentTime := time.Now()
 	date := currentTime.Format("2006-01-02")
 	day := currentTime.Weekday()
@@ -156,7 +156,7 @@ func getExerciseLogs(w http.ResponseWriter, r *http.Request) {
     INNER JOIN exercise_log e ON e.log_id = l.log_id
     WHERE p.profile_id = $1
 	ORDER BY e.exercise_id DESC
-	LIMIT 10;
+	LIMIT 11;
 	`, data.Profile_ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
