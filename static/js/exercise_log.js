@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemsList = document.getElementById('table');
             let curRow = document.getElementById('top');
             for (let i = 0; i < data.info.length; i++) {
-                if (i > parseInt(localStorage.getItem('numExerciseLogsShown'))) {
+                if (i > parseInt(localStorage.getItem('numExerciseLogsShown'))-1) {
                     break;
                 }
                 let item = data.info[i];
@@ -71,38 +71,40 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 document.getElementById('more-button').style.display = 'inline-block';
             }
+            getMore = document.getElementById('more-button')
+            if (getMore != null) {
+                console.log('here');
+                getMore.addEventListener('click', (event) => {
+                    console.log('here');
+                    // Will do another query, make sure to just get the next 10 and keep track of how many you are already showing
+                    dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), offset: String(totalLogs) }
+                    fetch('http://localhost:8080/api/getMoreExerciseLogs', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(dataToSend),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('here');
+                        let add = data.info.length;
+                        if (add > 10) {
+                            // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
+                            localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown')) + 10);
+                        } else {
+                            // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
+                            localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown')) + add);
+                            document.getElementById('more-button').style.display = 'none';
+                        }
+                        window.location.reload();
+                    })
+                })
+            }
         }
     })
 
-    const getMore = document.getElementById('more-button');
-    if (getMore != null) {
-        getMore.addEventListener('click', (event) => {
-            console.log('here');
-            // Will do another query, make sure to just get the next 10 and keep track of how many you are already showing
-            dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), offset: totalLogs }
-            fetch('http://localhost:8080/api/getMoreExerciseLogs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('here');
-                let add = data.info.length;
-                if (add > 10) {
-                    // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
-                    localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown')) + 10);
-                } else {
-                    // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
-                    localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown')) + add);
-                    document.getElementById('more-button').style.display = 'none';
-                }
-                window.location.reload();
-            })
-        })
-    }
+    
     
 
 
