@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let totalLogs = 0;
-    let addonRow = null;
     if (localStorage.getItem('numExerciseLogsShown') === null) {
         localStorage.setItem('numExerciseLogsShown', 10);
     }
@@ -49,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tr = document.createElement('tr');
                 itemsList.appendChild(tr);
                 curRow = tr
-                addonRow = tr
 
                 const td = document.createElement('td');
                 const button = document.createElement('button');
