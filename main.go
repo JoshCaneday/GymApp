@@ -38,6 +38,12 @@ type RequestNewExercise struct {
 
 type RequestExerciseLogs struct {
 	Profile_ID string `json:"profile_ID"`
+	Limit      string `json:"limit"`
+}
+
+type RequestMoreExerciseLogs struct {
+	Profile_ID string `json:"profile_ID"`
+	Offset     string `json:"offset"`
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string) {
@@ -137,7 +143,7 @@ func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getExerciseLogs(w http.ResponseWriter, r *http.Request) {
+func getExerciseLogsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -156,8 +162,53 @@ func getExerciseLogs(w http.ResponseWriter, r *http.Request) {
     INNER JOIN exercise_log e ON e.log_id = l.log_id
     WHERE p.profile_id = $1
 	ORDER BY e.exercise_id DESC
-	LIMIT 11;
-	`, data.Profile_ID)
+	LIMIT $2;
+	`, data.Profile_ID, data.Limit)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var info [][]string
+	for rows.Next() {
+		var date, day, label, metric, weight, reps, sets string
+
+		// Scan the row's columns into variables
+		err := rows.Scan(&date, &day, &label, &weight, &metric, &reps, &sets)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		info = append(info, []string{date, day, label, weight, metric, reps, sets})
+	}
+	response := map[string][][]string{"info": info}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func getMoreExerciseLogsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	var data RequestMoreExerciseLogs
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rows, err := db.Query(`
+    SELECT l.date, l.day, e.label, e.weight, e.metric, e.reps, e.sets
+    FROM profile p
+    INNER JOIN log l ON p.profile_id = l.profile_id
+    INNER JOIN exercise_log e ON e.log_id = l.log_id
+    WHERE p.profile_id = $1
+	ORDER BY e.exercise_id DESC
+	LIMIT 11
+	OFFSET $2;
+	`, data.Profile_ID, data.Offset)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -230,7 +281,8 @@ func main() {
 	http.HandleFunc("/exercise_log", exerciseLogHandler)
 	http.HandleFunc("/measurement_log", measurementLogHandler)
 	http.HandleFunc("/api/logExercise", logExerciseHandler)
-	http.HandleFunc("/api/getExerciseLogs", getExerciseLogs)
+	http.HandleFunc("/api/getExerciseLogs", getExerciseLogsHandler)
+	http.HandleFunc("/api/getMoreExerciseLogs", getMoreExerciseLogsHandler)
 	http.HandleFunc("/api/getInfo", getInfoHandler)
 
 	// Make sure PostgreSQL connection is working

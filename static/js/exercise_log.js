@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/home';
     });
 
-    dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), limit: localStorage.getItem('numExerciseLogsShown') }
+    dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), limit: String(parseInt(localStorage.getItem('numExerciseLogsShown'))+1) }
+
     fetch('http://localhost:8080/api/getExerciseLogs', {
         method: 'POST',
         headers: {
@@ -40,10 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.info.length > 0){
             const itemsList = document.getElementById('table');
             let curRow = document.getElementById('top');
-            let count = 0;
             for (let i = 0; i < data.info.length; i++) {
-                count += 1;
-                if (count === 11) {
+                if (i > parseInt(localStorage.getItem('numExerciseLogsShown'))) {
                     break;
                 }
                 let item = data.info[i];
@@ -60,60 +59,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 curRow.appendChild(td);
             }
         }
-        if (data.info.length === 11) {
-            // total logs will be set to 10 so that we know to 
-            totalLogs = 10;
-            const moreDiv = document.getElementById('more');
-            const moreButton = document.createElement('button');
-            moreButton.textContent = "Show More";
-            moreButton.id = "more-button";
-            moreDiv.appendChild(moreButton);
-        }
-    })
-
-    const getMore = document.getElementById('more-button');
-    getMore.addEventListener('click', (event) => {
-        // Will do another query, make sure to just get the next 10 and keep track of how many you are already showing
-        fetch('http://localhost:8080/api/getExerciseLogs', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dataToSend),
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
-            localStorage.setItem('numExerciseLogsShown', localStorage.getItem('numExerciseLogsShown') + data.info.length);
-
-            if (data.info.length > 0){
-
-                const itemsList = document.getElementById('table');
-                let curRow = addonRow
-                data.info.forEach(item => {
-                    const tr = document.createElement('tr');
-                    itemsList.appendChild(tr);
-                    curRow = tr
-                    addonRow = tr
-    
-                    const td = document.createElement('td');
-                    const button = document.createElement('button');
-                    td.appendChild(button)
-                    button.textContent = item;
-                    button.className = "past-exercise";
-                    curRow.appendChild(td);
-                });
-            }
-            if (data.info.length === 10) {
-                totalLogs += 10;
+        if (data.info.length >= parseInt(localStorage.getItem('numExerciseLogsShown'))+1) {
+            // total logs will be set to number of logs shown max so that we know to
+            totalLogs = parseInt(localStorage.getItem('numExerciseLogsShown'));
+            if (document.getElementById('more-button') === null){
                 const moreDiv = document.getElementById('more');
                 const moreButton = document.createElement('button');
                 moreButton.textContent = "Show More";
                 moreButton.id = "more-button";
                 moreDiv.appendChild(moreButton);
+            } else {
+                document.getElementById('more-button').style.display = 'inline-block';
             }
-        })
+        }
     })
+
+    const getMore = document.getElementById('more-button');
+    if (getMore != null) {
+        getMore.addEventListener('click', (event) => {
+            console.log('here');
+            // Will do another query, make sure to just get the next 10 and keep track of how many you are already showing
+            dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), offset: totalLogs }
+            fetch('http://localhost:8080/api/getMoreExerciseLogs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToSend),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('here');
+                let add = data.info.length;
+                if (add > 10) {
+                    // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
+                    localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown')) + 10);
+                } else {
+                    // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
+                    localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown')) + add);
+                    document.getElementById('more-button').style.display = 'none';
+                }
+                window.location.reload();
+            })
+        })
+    }
+    
 
 
     var modal = document.getElementById("miniModal");
