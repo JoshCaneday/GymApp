@@ -110,7 +110,7 @@ func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 		// add to already made log
 		var check string
 		rows.Scan(&check)
-		_, err := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", check,
+		_, err := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6);", check,
 			data.Exercise, data.Amount, data.Metric, data.Reps, data.Sets)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -128,7 +128,7 @@ func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(logID)
 
 		// Insert into exercise_log using the retrieved log_id
-		_, err2 := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6)", logID,
+		_, err2 := db.Exec("INSERT INTO exercise_log(log_id, label, weight, metric, reps, sets) VALUES ($1, $2, $3, $4, $5, $6);", logID,
 			data.Exercise, data.Amount, data.Metric, data.Reps, data.Sets)
 		if err2 != nil {
 			http.Error(w, err2.Error(), http.StatusInternalServerError)
@@ -156,7 +156,7 @@ func getExerciseLogsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rows, err := db.Query(`
-    SELECT l.date, l.day, e.label, e.weight, e.metric, e.reps, e.sets
+    SELECT l.date, l.day, e.label, e.weight, e.metric, e.reps, e.sets, e.exercise_id
     FROM profile p
     INNER JOIN log l ON p.profile_id = l.profile_id
     INNER JOIN exercise_log e ON e.log_id = l.log_id
@@ -172,15 +172,15 @@ func getExerciseLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var info [][]string
 	for rows.Next() {
-		var date, day, label, metric, weight, reps, sets string
+		var date, day, label, metric, weight, reps, sets, returnid string
 
 		// Scan the row's columns into variables
-		err := rows.Scan(&date, &day, &label, &weight, &metric, &reps, &sets)
+		err := rows.Scan(&date, &day, &label, &weight, &metric, &reps, &sets, &returnid)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		info = append(info, []string{date, day, label, weight, metric, reps, sets})
+		info = append(info, []string{date, day, label, weight, metric, reps, sets, returnid})
 	}
 	response := map[string][][]string{"info": info}
 	w.Header().Set("Content-Type", "application/json")

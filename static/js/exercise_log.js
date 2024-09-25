@@ -54,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 td.appendChild(button)
                 button.textContent = item;
                 button.className = "past-exercise";
+                button.setAttribute('exercise-log-val', data.info[i][data.info[i].length - 1]);
+                
                 curRow.appendChild(td);
             }
         }
@@ -71,9 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             getMore = document.getElementById('more-button')
             if (getMore != null) {
-                console.log('here');
                 getMore.addEventListener('click', (event) => {
-                    console.log('here');
                     // Will do another query, make sure to just get the next 10 and keep track of how many you are already showing
                     dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), offset: String(totalLogs) }
                     fetch('http://localhost:8080/api/getMoreExerciseLogs', {
@@ -85,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('here');
                         let add = data.info.length;
                         if (add > 10) {
                             // Store the number of exercise that will be shown to be whatever it currently is, plus this added amount
@@ -99,6 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 })
             }
+        }
+        //console.log(localStorage.getItem('numExerciseLogsShown'));
+        if (parseInt(localStorage.getItem('numExerciseLogsShown')) > 10) {
+            const lessDiv = document.getElementById('less');
+            const lessButton = document.createElement('button');
+            lessButton.textContent = "Show Less";
+            lessButton.id = "less-button";
+            lessDiv.appendChild(lessButton);
+            getLess = document.getElementById('less-button');
+            getLess.addEventListener('click', (event) => {
+                localStorage.setItem('numExerciseLogsShown', 10);
+                window.location.reload();
+            })
         }
     })
 
