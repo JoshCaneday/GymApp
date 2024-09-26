@@ -26,6 +26,21 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/home';
     });
 
+    dataToSend = { profile_ID: String(localStorage.getItem('profile_id')) }
+    fetch('http://localhost:8080/api/getNumExerciseLogs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('num_workouts').textContent = "Number of Workouts: " + data.info[0];
+        document.getElementById('days-of-rest').textContent = "Days of Rest: " + data.info[1];
+    })
+    
+
     dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), limit: String(parseInt(localStorage.getItem('numExerciseLogsShown'))+1) }
 
     fetch('http://localhost:8080/api/getExerciseLogs', {
@@ -55,7 +70,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.textContent = item;
                 button.className = "past-exercise";
                 button.setAttribute('exercise-log-val', data.info[i][data.info[i].length - 1]);
-                
+                button.addEventListener('click', (event) => {
+                    modal = document.getElementById('exerciseLogModal');
+                    modal.style.display = "block";
+                    document.getElementById('insert-date').textContent = "Date: " + String(data.info[i][0]);
+                    document.getElementById('insert-day').textContent = "Day: " + String(data.info[i][1]);
+                    document.getElementById('insert-label').textContent = "Exercise: " + String(data.info[i][2]);
+                    document.getElementById('insert-weight').textContent = "Weight: " + String(data.info[i][3]);
+                    document.getElementById('insert-metric').textContent = "Metrics: " + String(data.info[i][4]);
+                    document.getElementById('insert-reps').textContent = "Reps: " + String(data.info[i][5]);
+                    document.getElementById('insert-sets').textContent = "Sets: " + String(data.info[i][6]);
+                    delLog = document.getElementById('deleteExerciseLog');
+                    delLog.addEventListener('click', (event) => {
+                        dataToSend = { profile_ID: String(data.info[i][7]) }
+
+                        fetch('http://localhost:8080/api/deleteExerciseLog', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(dataToSend),
+                        })
+                        .catch(error => console.error('Error:', error));
+                        if (parseInt(localStorage.getItem('numExerciseLogsShown')) > 10) {
+                            localStorage.setItem('numExerciseLogsShown', parseInt(localStorage.getItem('numExerciseLogsShown'))-1);
+                        }
+                        window.location.reload();
+                    })
+                })
                 curRow.appendChild(td);
             }
         }
@@ -114,19 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    
-    
-
-
-    var modal = document.getElementById("miniModal");
-    var btn = document.getElementById("make-exercise-log");
-    var span = document.getElementsByClassName("close")[0];
-    var form = document.getElementById("create-new-exercise-log");
-
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
+    var modal = document.getElementById("exerciseLogModal");
+    var span = document.getElementsByClassName("closeExerciseLog")[0];
     span.onclick = function() {
         modal.style.display = "none";
     }
@@ -136,7 +167,26 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.style.display = "none";
         }
     }
-    form.addEventListener('submit', (event) => {
+
+    var modal2 = document.getElementById("miniModal");
+    var btn2 = document.getElementById("make-exercise-log");
+    var span2 = document.getElementsByClassName("close")[0];
+    var form2 = document.getElementById("create-new-exercise-log");
+
+    btn2.onclick = function() {
+        modal2.style.display = "block";
+    }
+
+    span2.onclick = function() {
+        modal2.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal2) {
+            modal2.style.display = "none";
+        }
+    }
+    form2.addEventListener('submit', (event) => {
         localStorage.setItem('exercise', document.getElementById('exercise').value)
         dataToSend = { profile_ID: String(localStorage.getItem('profile_id')), exercise: String(document.getElementById('exercise').value), 
             metric: String(document.getElementById('metric').value), amount: String(document.getElementById('amount').value),
@@ -150,6 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(dataToSend),
         })
         .catch(error => console.error('Error:', error));
-        modal.style.display = "none";
+        modal2.style.display = "none";
     });
 });

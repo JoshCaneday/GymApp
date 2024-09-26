@@ -46,6 +46,10 @@ type RequestMoreExerciseLogs struct {
 	Offset     string `json:"offset"`
 }
 
+type RemoveData struct {
+	Profile_ID string `json:"profile_ID"`
+}
+
 func renderTemplate(w http.ResponseWriter, tmpl string) {
 	t, err := template.ParseFiles(tmpl)
 	if err != nil {
@@ -81,6 +85,58 @@ func exerciseLogHandler(w http.ResponseWriter, r *http.Request) {
 
 func measurementLogHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "templates/measurement_log.html")
+}
+
+func getNumExerciseLogsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	var data RemoveData // Reusing the RemoveData struct because it has exactly what is needed to perform same action
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	rows, err2 := db.Query(`SELECT COUNT(*) FROM profile p INNER JOIN log l on p.profile_id = l.profile_id
+						INNER JOIN exercise_log e on e.log_id = l.log_id WHERE p.profile_id = $1;`, data.Profile_ID)
+	if err2 != nil {
+		http.Error(w, err2.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+	var info string
+	if rows.Next() {
+		rows.Scan(&info)
+	} else {
+		info = "-1"
+	}
+	rows2, err3 := db.Query(`SELECT COUNT(*) FROM profile p INNER JOIN log l on p.profile_id = l.profile_id
+						INNER JOIN exercise_log e on e.log_id = l.log_id WHERE p.profile_id = $1;`, data.Profile_ID)
+	if err3 != nil {
+		http.Error(w, err3.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows2.Close()
+	var info2 string
+	if rows2.Next() {
+		rows2.Scan(&info2)
+	} else {
+		info2 = "-1"
+	}
+
+	rows5, _ := db.Query(`
+    SELECT e.label, MAX(e.weight) FROM profile p INNER JOIN log l on p.profile_id = l.profile_id
+	INNER JOIN exercise_log e ON e.log_id = l.log_id WHERE p.profile_id = $1 GROUP BY e.label;
+	`, data.Profile_ID)
+
+	defer rows5.Close()
+	// TODO attach the latest query results to ans and change the js and html files to accomodate the extra info
+	var ans = []string{info, info2}
+	response := map[string][]string{"info": ans}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func logExerciseHandler(w http.ResponseWriter, r *http.Request) {
@@ -232,6 +288,26 @@ func getMoreExerciseLogsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func deleteExerciseLogHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	var data RemoveData
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	_, err2 := db.Exec("DELETE FROM exercise_log WHERE exercise_id = $1;", data.Profile_ID)
+	if err2 != nil {
+		http.Error(w, err2.Error(), http.StatusInternalServerError)
+		return
+	}
+
+}
+
 func getInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -280,9 +356,11 @@ func main() {
 	http.HandleFunc("/profile", profileHandler)
 	http.HandleFunc("/exercise_log", exerciseLogHandler)
 	http.HandleFunc("/measurement_log", measurementLogHandler)
+	http.HandleFunc("/api/getNumExerciseLogs", getNumExerciseLogsHandler)
 	http.HandleFunc("/api/logExercise", logExerciseHandler)
 	http.HandleFunc("/api/getExerciseLogs", getExerciseLogsHandler)
 	http.HandleFunc("/api/getMoreExerciseLogs", getMoreExerciseLogsHandler)
+	http.HandleFunc("/api/deleteExerciseLog", deleteExerciseLogHandler)
 	http.HandleFunc("/api/getInfo", getInfoHandler)
 
 	// Make sure PostgreSQL connection is working

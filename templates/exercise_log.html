@@ -33,10 +33,10 @@
             <div class="exercise-container">
                 <div class="exercise-side-bar">
                     <div class="exercise-stat">
-                        <h1>Number of Workouts:</h1>
+                        <h1 id="num-workouts">Number of Workouts:</h1>
                     </div>
                     <div class="exercise-stat">
-                        <h1>Days of Rest:</h1>
+                        <h1 id="days-of-rest">Days of Rest:</h1>
                     </div>
                     <div class="exercise-stat">
                         <h1>Search PR:</h1>
@@ -66,7 +66,20 @@
                         </div>
                     </div>
                     <div class="exercise-history">
-                        
+                        <div id="exerciseLogModal" class="modal">
+                            <div class="modal-content">
+                                <span class="closeExerciseLog">&times;</span>
+                                <h2>Log Information:</h2>
+                                <h2 id="insert-date">Date:</h2>
+                                <h2 id="insert-day">Day:</h2>
+                                <h2 id="insert-label">Exercise:</h2>
+                                <h2 id="insert-weight">Weight:</h2>
+                                <h2 id="insert-metric">Metric:</h2>
+                                <h2 id="insert-reps">Reps:</h2>
+                                <h2 id="insert-sets">Sets:</h2>
+                                <button id="deleteExerciseLog">Delete Log</button>
+                            </div>
+                        </div>
                         <table id="table" class="table">
                             <tr class="top">
                                 <!-- Top row where new logs will be inserted below it -->
